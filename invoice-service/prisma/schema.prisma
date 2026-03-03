@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Client {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  firstName String
+  lastName  String
+  company   Company?
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("clients")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  clientId  String   @unique
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name      String
+  address   String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("companies")
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  clientId      String?
+  client        Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientEmail   String
+  status        InvoiceStatus @default(PENDING)
+  totalAmount   Decimal       @db.Decimal(12, 2)
+  issuedAt      DateTime      @default(now())
+  items         InvoiceItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  amount      Decimal  @db.Decimal(12, 2)
+  createdAt   DateTime @default(now())
+
+  @@map("invoice_items")
+}
+
+enum InvoiceStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}

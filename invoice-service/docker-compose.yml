@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports:
+      - '${PORT}:${PORT}'
+    env_file: .env.docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - invoice-network
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - '${DB_PORT}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - invoice-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '${REDIS_PORT}:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - invoice-network
+
+volumes:
+  pgdata:
+
+networks:
+  invoice-network:
+    driver: bridge
