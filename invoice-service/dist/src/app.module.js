@@ -17,6 +17,7 @@ const app_config_1 = __importDefault(require("./config/app.config"));
 const mail_config_1 = __importDefault(require("./config/mail.config"));
 const redis_config_1 = __importDefault(require("./config/redis.config"));
 const prisma_module_1 = require("./prisma/prisma.module");
+const client_module_1 = require("./modules/client/client.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -37,6 +38,7 @@ exports.AppModule = AppModule = __decorate([
                 }),
             }),
             prisma_module_1.PrismaModule,
+            client_module_1.ClientModule,
         ],
     })
 ], AppModule);
