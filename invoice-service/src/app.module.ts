@@ -7,7 +7,7 @@ import redisConfig from './config/redis.config';
 import { PrismaModule } from './prisma/prisma.module';
 import { ClientModule } from './modules/client/client.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
-// import { PdfModule } from './modules/pdf/pdf.module';
+import { PdfModule } from './modules/pdf/pdf.module';
 // import { MailModule } from './modules/mail/mail.module';
 
 @Module({
@@ -28,7 +28,7 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
     PrismaModule,
     ClientModule,
     InvoiceModule,
-    // PdfModule,
+    PdfModule,
     // MailModule,
   ],
 })
