@@ -11,8 +11,8 @@ export interface PdfData {
     };
     company: {
         name: string;
-        address?: string;
-        phone?: string;
+        address?: string | null;
+        phone?: string | null;
     } | null;
     invoice: {
         invoiceNumber: string;

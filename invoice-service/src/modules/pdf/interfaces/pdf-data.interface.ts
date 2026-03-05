@@ -1,7 +1,7 @@
 export interface PdfData {
   sender: { name: string; company: string; address: string; phone: string };
   client: { firstName: string; lastName: string };
-  company: { name: string; address?: string; phone?: string } | null;
+  company: { name: string; address?: string | null; phone?: string | null } | null;
   invoice: { invoiceNumber: string; issuedAt: Date };
   items: { description: string; amount: number }[];
   totalAmount: number;
