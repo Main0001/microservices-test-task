@@ -13,7 +13,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Invoice Service')
-    .setDescription('API для генерации и отправки инвойсов')
+    .setDescription('API for generating and sending invoices')
     .setVersion('1.0')
     .build();
   SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, config));

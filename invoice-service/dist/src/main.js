@@ -12,7 +12,7 @@ async function bootstrap() {
     app.useGlobalPipes(new common_1.ValidationPipe({ whitelist: true, transform: true }));
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Invoice Service')
-        .setDescription('API для генерации и отправки инвойсов')
+        .setDescription('API for generating and sending invoices')
         .setVersion('1.0')
         .build();
     swagger_1.SwaggerModule.setup('api', app, swagger_1.SwaggerModule.createDocument(app, config));
