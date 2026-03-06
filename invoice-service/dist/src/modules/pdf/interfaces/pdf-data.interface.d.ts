@@ -16,7 +16,7 @@ export interface PdfData {
     } | null;
     invoice: {
         invoiceNumber: string;
-        issuedAt: Date;
+        issuedAt: string;
     };
     items: {
         description: string;

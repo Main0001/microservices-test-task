@@ -25,12 +25,12 @@ let ClientRepository = class ClientRepository {
     }
     async create(email) {
         const [firstName, ...rest] = email.split('@')[0].split('.');
-        const lastName = rest.join('.') || 'Unknown';
+        const lastName = rest.join('.') || '';
         return this.prisma.client.create({
             data: {
                 email,
                 firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
-                lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
+                lastName: lastName ? lastName.charAt(0).toUpperCase() + lastName.slice(1) : '',
             },
             include: { company: true },
         });

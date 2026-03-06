@@ -38,7 +38,10 @@ let InvoiceService = class InvoiceService {
             totalAmount,
             items: dto.items,
         });
-        await this.pdfQueue.add('generate', { invoiceId: invoice.id });
+        await this.pdfQueue.add('generate', { invoiceId: invoice.id }, {
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 2000 },
+        });
         return {
             invoiceId: invoice.id,
             invoiceNumber: invoice.invoiceNumber,

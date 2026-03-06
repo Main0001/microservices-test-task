@@ -30,14 +30,14 @@ export declare class InvoiceRepository {
         }[];
     }): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        clientId: string | null;
         invoiceNumber: string;
         clientEmail: string;
         status: import("@prisma/client").$Enums.InvoiceStatus;
         totalAmount: Prisma.Decimal;
         issuedAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        clientId: string | null;
     }>;
     findAll(skip: number, take: number): Promise<InvoiceWithItems[]>;
     findById(id: string): Promise<InvoiceWithDetails>;

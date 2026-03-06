@@ -21,18 +21,18 @@ export declare class InvoiceController {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                clientId: string;
                 name: string;
                 address: string | null;
                 phone: string | null;
-                clientId: string;
             } | null;
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             email: string;
             firstName: string;
             lastName: string;
-            createdAt: Date;
-            updatedAt: Date;
         }) | null;
         items: {
             id: string;
@@ -43,13 +43,13 @@ export declare class InvoiceController {
         }[];
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        clientId: string | null;
         invoiceNumber: string;
         clientEmail: string;
         status: import("@prisma/client").$Enums.InvoiceStatus;
         totalAmount: import("@prisma/client-runtime-utils").Decimal;
         issuedAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        clientId: string | null;
     }>;
 }

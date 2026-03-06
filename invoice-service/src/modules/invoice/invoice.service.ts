@@ -17,6 +17,12 @@ export class InvoiceService {
     @InjectQueue('pdf-generation') private readonly pdfQueue: Queue,
   ) {}
 
+  /**
+   * Creates a new invoice, saves it to the database, and queues PDF generation.
+   * Returns immediately without waiting for PDF — async processing via BullMQ.
+   * @param dto - Invoice creation data (client email + line items)
+   * @returns Invoice ID, number, status, and processing message
+   */
   async create(dto: CreateInvoiceDto) {
     const client = await this.clientService.findOrCreate({ email: dto.email });
 
@@ -31,8 +37,15 @@ export class InvoiceService {
       items: dto.items,
     });
 
-    //add invoice in Queue for PDF generation
-    await this.pdfQueue.add('generate', { invoiceId: invoice.id });
+    // Add invoice to the queue for async PDF generation
+    await this.pdfQueue.add(
+      'generate',
+      { invoiceId: invoice.id },
+      {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 2000 },
+      },
+    );
 
     return {
       invoiceId: invoice.id,
@@ -42,6 +55,12 @@ export class InvoiceService {
     };
   }
 
+  /**
+   * Returns a paginated list of invoices with items and client info.
+   * @param page - Page number (1-based)
+   * @param limit - Number of items per page
+   * @returns Paginated result with items, total count, page, and limit
+   */
   async findAll(
     page: number,
     limit: number,
@@ -53,7 +72,7 @@ export class InvoiceService {
   }> {
     const skip = (page - 1) * limit;
 
-    //Execute the longest task in parallel
+    // Execute DB queries in parallel for better performance
     const [items, total] = await Promise.all([
       this.invoiceRepository.findAll(skip, limit),
       this.invoiceRepository.count(),
@@ -61,15 +80,24 @@ export class InvoiceService {
     return { items, total, page, limit };
   }
 
+  /**
+   * Returns a single invoice by ID with full client and company details.
+   * @param id - Invoice UUID
+   * @returns Invoice with items, client, and company
+   */
   async findOne(id: string): Promise<InvoiceWithDetails> {
     return this.invoiceRepository.findById(id);
   }
 
+  /**
+   * Generates a unique sequential invoice number in format INV-YYYY-XXXX.
+   * @returns Invoice number string, e.g. "INV-2026-0001"
+   */
   private async generateInvoiceNumber(): Promise<string> {
     const year = new Date().getFullYear();
     const count = await this.invoiceRepository.count();
 
-    //Add leading zeros 1 = 0001
+    // Pad sequence number with leading zeros (e.g. 1 → 0001)
     const sequence = String(count + 1).padStart(4, '0');
     return `INV-${year}-${sequence}`;
   }

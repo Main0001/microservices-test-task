@@ -38,23 +38,35 @@ let PdfProcessor = PdfProcessor_1 = class PdfProcessor extends bullmq_1.WorkerHo
     async process(job) {
         const { invoiceId } = job.data;
         this.logger.log(`Generating PDF for invoice ${invoiceId}`);
-        const invoice = await this.invoiceRepository.findById(invoiceId);
-        const pdfBuffer = await this.pdfService.generate({
-            sender: this.configService.get('app.sender'),
-            client: { firstName: invoice.client.firstName, lastName: invoice.client.lastName },
-            company: invoice.client.company,
-            invoice: { invoiceNumber: invoice.invoiceNumber, issuedAt: invoice.issuedAt },
-            items: invoice.items.map((i) => ({ description: i.description, amount: Number(i.amount) })),
-            totalAmount: Number(invoice.totalAmount),
-        });
-        await this.invoiceRepository.updateStatus(invoiceId, client_1.InvoiceStatus.PROCESSING);
-        await this.mailQueue.add('send', {
-            invoiceId,
-            clientEmail: invoice.clientEmail,
-            invoiceNumber: invoice.invoiceNumber,
-            pdfBuffer: pdfBuffer.toString('base64'),
-        });
-        this.logger.log(`PDF generated, queued for email: ${invoiceId}`);
+        try {
+            const invoice = await this.invoiceRepository.findById(invoiceId);
+            const pdfBuffer = await this.pdfService.generate({
+                sender: this.configService.get('app.sender'),
+                client: { firstName: invoice.client.firstName, lastName: invoice.client.lastName },
+                company: invoice.client.company,
+                invoice: {
+                    invoiceNumber: invoice.invoiceNumber,
+                    issuedAt: invoice.issuedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                },
+                items: invoice.items.map((i) => ({ description: i.description, amount: Number(i.amount) })),
+                totalAmount: Number(invoice.totalAmount),
+            });
+            await this.invoiceRepository.updateStatus(invoiceId, client_1.InvoiceStatus.PROCESSING);
+            await this.mailQueue.add('send', {
+                invoiceId,
+                clientEmail: invoice.clientEmail,
+                invoiceNumber: invoice.invoiceNumber,
+                pdfBuffer: pdfBuffer.toString('base64'),
+            }, {
+                attempts: 3,
+                backoff: { type: 'exponential', delay: 2000 },
+            });
+            this.logger.log(`PDF generated, queued for email: ${invoiceId}`);
+        }
+        catch (error) {
+            this.logger.error(`Failed to generate PDF for invoice ${invoiceId}`, error);
+            throw error;
+        }
     }
 };
 exports.PdfProcessor = PdfProcessor;
