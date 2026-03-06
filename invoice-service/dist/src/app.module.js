@@ -20,6 +20,7 @@ const prisma_module_1 = require("./prisma/prisma.module");
 const client_module_1 = require("./modules/client/client.module");
 const invoice_module_1 = require("./modules/invoice/invoice.module");
 const pdf_module_1 = require("./modules/pdf/pdf.module");
+const mail_module_1 = require("./modules/mail/mail.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,6 +44,7 @@ exports.AppModule = AppModule = __decorate([
             client_module_1.ClientModule,
             invoice_module_1.InvoiceModule,
             pdf_module_1.PdfModule,
+            mail_module_1.MailModule,
         ],
     })
 ], AppModule);

@@ -8,7 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ClientModule } from './modules/client/client.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
 import { PdfModule } from './modules/pdf/pdf.module';
-// import { MailModule } from './modules/mail/mail.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ import { PdfModule } from './modules/pdf/pdf.module';
     ClientModule,
     InvoiceModule,
     PdfModule,
-    // MailModule,
+    MailModule,
   ],
 })
 export class AppModule {}
