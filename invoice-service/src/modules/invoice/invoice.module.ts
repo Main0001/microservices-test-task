@@ -6,10 +6,7 @@ import { InvoiceRepository } from './invoice.repository';
 import { ClientModule } from '../client/client.module';
 
 @Module({
-  imports: [
-    BullModule.registerQueue({ name: 'pdf-generation' }),
-    ClientModule,
-  ],
+  imports: [BullModule.registerQueue({ name: 'pdf-generation' }), ClientModule],
   controllers: [InvoiceController],
   providers: [InvoiceRepository, InvoiceService],
   exports: [InvoiceRepository],

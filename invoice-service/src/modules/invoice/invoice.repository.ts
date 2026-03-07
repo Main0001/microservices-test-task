@@ -1,14 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InvoiceStatus, Prisma } from '@prisma/client';
+import { InvoiceStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-
-export type InvoiceWithItems = Prisma.InvoiceGetPayload<{
-  include: { items: true; client: true };
-}>;
-
-export type InvoiceWithDetails = Prisma.InvoiceGetPayload<{
-  include: { items: true; client: { include: { company: true } } };
-}>;
+import { CreateInvoiceData } from './interfaces/invoice.interfaces';
+import { InvoiceWithItems, InvoiceWithDetails } from './types/invoice.types';
 
 @Injectable()
 export class InvoiceRepository {
@@ -19,13 +13,7 @@ export class InvoiceRepository {
    * @param data - Invoice data including client, items, and total amount
    * @returns Created invoice record
    */
-  async create(data: {
-    invoiceNumber: string;
-    clientId: string;
-    clientEmail: string;
-    totalAmount: number;
-    items: { description: string; amount: number }[];
-  }) {
+  async create(data: CreateInvoiceData) {
     return this.prisma.invoice.create({
       data: {
         invoiceNumber: data.invoiceNumber,

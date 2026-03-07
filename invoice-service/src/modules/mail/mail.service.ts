@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { SendInvoiceOptions } from './interfaces/mail.interfaces';
 
 @Injectable()
 export class MailService {
@@ -22,11 +23,7 @@ export class MailService {
    * @param options.invoiceNumber - Invoice number used in subject and filename
    * @param options.pdfBuffer - PDF file content as a Buffer
    */
-  async sendInvoice(options: {
-    to: string;
-    invoiceNumber: string;
-    pdfBuffer: Buffer;
-  }): Promise<void> {
+  async sendInvoice(options: SendInvoiceOptions): Promise<void> {
     const from = this.configService.get<string>('mail.from');
 
     await this.transporter.sendMail({

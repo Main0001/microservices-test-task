@@ -14,9 +14,16 @@ export class PdfService {
    * @returns PDF file as a Buffer
    */
   async generate(data: PdfData): Promise<Buffer> {
-    const templatePath = path.join(__dirname, 'templates', 'invoice.template.hbs');
+    const templatePath = path.join(
+      __dirname,
+      'templates',
+      'invoice.template.hbs',
+    );
     const templateSource = fs.readFileSync(templatePath, 'utf-8');
     const html = Handlebars.compile(templateSource)(data);
-    return htmlPdfNode.generatePdf({ content: html }, { format: 'A4' }) as unknown as Promise<Buffer>;
+    return htmlPdfNode.generatePdf(
+      { content: html },
+      { format: 'A4' },
+    ) as unknown as Promise<Buffer>;
   }
 }

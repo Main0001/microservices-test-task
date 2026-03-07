@@ -1,12 +1,9 @@
 import { ConfigService } from '@nestjs/config';
+import { SendInvoiceOptions } from './interfaces/mail.interfaces';
 export declare class MailService {
     private readonly configService;
     private readonly logger;
     private readonly transporter;
     constructor(configService: ConfigService);
-    sendInvoice(options: {
-        to: string;
-        invoiceNumber: string;
-        pdfBuffer: Buffer;
-    }): Promise<void>;
+    sendInvoice(options: SendInvoiceOptions): Promise<void>;
 }
