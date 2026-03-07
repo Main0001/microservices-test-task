@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import { InvoiceStatus } from '@prisma/client';
 import { InvoiceRepository } from '../invoice/invoice.repository';
 import { MailService } from './mail.service';
+import { SendEmailJobData } from './interfaces/mail.interfaces';
 
 @Processor('email-sending')
 export class MailProcessor extends WorkerHost {
@@ -22,12 +23,7 @@ export class MailProcessor extends WorkerHost {
    * On failure, marks the invoice as FAILED and re-throws for BullMQ retry.
    * @param job - BullMQ job containing invoice ID, email, number, and PDF as base64
    */
-  async process(job: Job<{
-    invoiceId: string;
-    clientEmail: string;
-    invoiceNumber: string;
-    pdfBuffer: string; // base64
-  }>): Promise<void> {
+  async process(job: Job<SendEmailJobData>): Promise<void> {
     const { invoiceId, clientEmail, invoiceNumber, pdfBuffer } = job.data;
     this.logger.log(`Sending email for invoice ${invoiceNumber}`);
 
@@ -41,7 +37,10 @@ export class MailProcessor extends WorkerHost {
       await this.invoiceRepository.updateStatus(invoiceId, InvoiceStatus.SENT);
       this.logger.log(`Invoice ${invoiceNumber} delivered`);
     } catch (error) {
-      await this.invoiceRepository.updateStatus(invoiceId, InvoiceStatus.FAILED);
+      await this.invoiceRepository.updateStatus(
+        invoiceId,
+        InvoiceStatus.FAILED,
+      );
       this.logger.error(`Failed to deliver ${invoiceNumber}`, error);
       throw error; // BullMQ marks job as failed and retries
     }

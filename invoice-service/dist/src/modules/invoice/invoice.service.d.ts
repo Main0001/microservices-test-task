@@ -1,5 +1,7 @@
 import { Queue } from 'bullmq';
-import { InvoiceRepository, InvoiceWithDetails, InvoiceWithItems } from './invoice.repository';
+import { InvoiceRepository } from './invoice.repository';
+import { InvoiceWithDetails } from './types/invoice.types';
+import { PaginatedInvoicesResult } from './interfaces/invoice.interfaces';
 import { ClientService } from '../client/client.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 export declare class InvoiceService {
@@ -13,12 +15,7 @@ export declare class InvoiceService {
         status: import("@prisma/client").$Enums.InvoiceStatus;
         message: string;
     }>;
-    findAll(page: number, limit: number): Promise<{
-        items: InvoiceWithItems[];
-        total: number;
-        page: number;
-        limit: number;
-    }>;
+    findAll(page: number, limit: number): Promise<PaginatedInvoicesResult>;
     findOne(id: string): Promise<InvoiceWithDetails>;
     private generateInvoiceNumber;
 }

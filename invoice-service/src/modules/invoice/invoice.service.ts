@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import {
-  InvoiceRepository,
-  InvoiceWithDetails,
-  InvoiceWithItems,
-} from './invoice.repository';
+import { InvoiceRepository } from './invoice.repository';
+import { InvoiceWithDetails } from './types/invoice.types';
+import { PaginatedInvoicesResult } from './interfaces/invoice.interfaces';
 import { ClientService } from '../client/client.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 
@@ -61,15 +59,7 @@ export class InvoiceService {
    * @param limit - Number of items per page
    * @returns Paginated result with items, total count, page, and limit
    */
-  async findAll(
-    page: number,
-    limit: number,
-  ): Promise<{
-    items: InvoiceWithItems[];
-    total: number;
-    page: number;
-    limit: number;
-  }> {
+  async findAll(page: number, limit: number): Promise<PaginatedInvoicesResult> {
     const skip = (page - 1) * limit;
 
     // Execute DB queries in parallel for better performance

@@ -17,10 +17,7 @@ let MailModule = class MailModule {
 exports.MailModule = MailModule;
 exports.MailModule = MailModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            bullmq_1.BullModule.registerQueue({ name: 'email-sending' }),
-            invoice_module_1.InvoiceModule,
-        ],
+        imports: [bullmq_1.BullModule.registerQueue({ name: 'email-sending' }), invoice_module_1.InvoiceModule],
         providers: [mail_service_1.MailService, mail_processor_1.MailProcessor],
     })
 ], MailModule);

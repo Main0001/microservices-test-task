@@ -5,10 +5,7 @@ import { MailProcessor } from './mail.processor';
 import { InvoiceModule } from '../invoice/invoice.module';
 
 @Module({
-  imports: [
-    BullModule.registerQueue({ name: 'email-sending' }),
-    InvoiceModule,
-  ],
+  imports: [BullModule.registerQueue({ name: 'email-sending' }), InvoiceModule],
   providers: [MailService, MailProcessor],
 })
 export class MailModule {}

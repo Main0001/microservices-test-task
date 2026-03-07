@@ -18,10 +18,7 @@ let InvoiceModule = class InvoiceModule {
 exports.InvoiceModule = InvoiceModule;
 exports.InvoiceModule = InvoiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            bullmq_1.BullModule.registerQueue({ name: 'pdf-generation' }),
-            client_module_1.ClientModule,
-        ],
+        imports: [bullmq_1.BullModule.registerQueue({ name: 'pdf-generation' }), client_module_1.ClientModule],
         controllers: [invoice_controller_1.InvoiceController],
         providers: [invoice_repository_1.InvoiceRepository, invoice_service_1.InvoiceService],
         exports: [invoice_repository_1.InvoiceRepository],

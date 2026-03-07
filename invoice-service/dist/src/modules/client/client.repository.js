@@ -30,7 +30,9 @@ let ClientRepository = class ClientRepository {
             data: {
                 email,
                 firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
-                lastName: lastName ? lastName.charAt(0).toUpperCase() + lastName.slice(1) : '',
+                lastName: lastName
+                    ? lastName.charAt(0).toUpperCase() + lastName.slice(1)
+                    : '',
             },
             include: { company: true },
         });

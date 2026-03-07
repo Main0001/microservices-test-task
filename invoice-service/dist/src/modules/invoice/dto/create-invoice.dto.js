@@ -21,6 +21,7 @@ class CreateInvoiceDto {
 exports.CreateInvoiceDto = CreateInvoiceDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'john.doe@example.com' }),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], CreateInvoiceDto.prototype, "email", void 0);
@@ -28,6 +29,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({ type: [invoice_item_dto_1.InvoiceItemDto] }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ArrayNotEmpty)(),
+    (0, class_validator_1.IsNotEmpty)({ each: true }),
     (0, class_validator_1.ValidateNested)({ each: true }),
     (0, class_transformer_1.Type)(() => invoice_item_dto_1.InvoiceItemDto),
     __metadata("design:type", Array)

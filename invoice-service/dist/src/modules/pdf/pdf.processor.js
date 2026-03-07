@@ -42,13 +42,23 @@ let PdfProcessor = PdfProcessor_1 = class PdfProcessor extends bullmq_1.WorkerHo
             const invoice = await this.invoiceRepository.findById(invoiceId);
             const pdfBuffer = await this.pdfService.generate({
                 sender: this.configService.get('app.sender'),
-                client: { firstName: invoice.client.firstName, lastName: invoice.client.lastName },
+                client: {
+                    firstName: invoice.client.firstName,
+                    lastName: invoice.client.lastName,
+                },
                 company: invoice.client.company,
                 invoice: {
                     invoiceNumber: invoice.invoiceNumber,
-                    issuedAt: invoice.issuedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                    issuedAt: invoice.issuedAt.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    }),
                 },
-                items: invoice.items.map((i) => ({ description: i.description, amount: Number(i.amount) })),
+                items: invoice.items.map((i) => ({
+                    description: i.description,
+                    amount: Number(i.amount),
+                })),
                 totalAmount: Number(invoice.totalAmount),
             });
             await this.invoiceRepository.updateStatus(invoiceId, client_1.InvoiceStatus.PROCESSING);

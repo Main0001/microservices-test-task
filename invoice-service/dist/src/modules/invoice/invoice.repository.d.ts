@@ -1,43 +1,20 @@
-import { InvoiceStatus, Prisma } from '@prisma/client';
+import { InvoiceStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-export type InvoiceWithItems = Prisma.InvoiceGetPayload<{
-    include: {
-        items: true;
-        client: true;
-    };
-}>;
-export type InvoiceWithDetails = Prisma.InvoiceGetPayload<{
-    include: {
-        items: true;
-        client: {
-            include: {
-                company: true;
-            };
-        };
-    };
-}>;
+import { CreateInvoiceData } from './interfaces/invoice.interfaces';
+import { InvoiceWithItems, InvoiceWithDetails } from './types/invoice.types';
 export declare class InvoiceRepository {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    create(data: {
-        invoiceNumber: string;
-        clientId: string;
-        clientEmail: string;
-        totalAmount: number;
-        items: {
-            description: string;
-            amount: number;
-        }[];
-    }): Promise<{
+    create(data: CreateInvoiceData): Promise<{
         id: string;
-        invoiceNumber: string;
-        clientEmail: string;
-        status: import("@prisma/client").$Enums.InvoiceStatus;
-        totalAmount: Prisma.Decimal;
-        issuedAt: Date;
         createdAt: Date;
         updatedAt: Date;
         clientId: string | null;
+        invoiceNumber: string;
+        clientEmail: string;
+        status: import("@prisma/client").$Enums.InvoiceStatus;
+        totalAmount: import("@prisma/client-runtime-utils").Decimal;
+        issuedAt: Date;
     }>;
     findAll(skip: number, take: number): Promise<InvoiceWithItems[]>;
     findById(id: string): Promise<InvoiceWithDetails>;
