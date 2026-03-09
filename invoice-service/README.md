@@ -1,100 +1,278 @@
-cd "c:/Programing/Microservices test task/invoice-service" && docker-compose build && docker-compose up
+# Invoice Service
 
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+REST API сервис для создания счетов-фактур (инвойсов), генерации PDF и отправки на email. Реализован как тестовое задание.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Стек технологий
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+| Технология | Версия | Назначение |
+|---|---|---|
+| NestJS | 11 | Веб-фреймворк |
+| Prisma | 7 | ORM |
+| PostgreSQL | 16 | База данных |
+| Redis | 7 | Бэкенд для очередей |
+| BullMQ | 5 | Асинхронная обработка задач |
+| Handlebars | 4 | HTML-шаблон для PDF |
+| html-pdf-node | 1 | Генерация PDF из HTML |
+| Nodemailer | 8 | Отправка email через SMTP |
+| Swagger | 11 | Документация API |
+| Docker | — | Контейнеризация |
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## API Endpoints
 
-## Project setup
+| Метод | Путь | Описание |
+|---|---|---|
+| `POST` | `/invoices` | Создать инвойс и запустить асинхронную обработку |
+| `GET` | `/invoices` | Список всех инвойсов (с пагинацией) |
+| `GET` | `/invoices/:id` | Получить инвойс по ID |
 
-```bash
-$ npm install
+**Swagger UI:** `http://localhost:3000/api`
+
+### POST /invoices — Тело запроса
+
+```json
+{
+  "email": "john.doe@example.com",
+  "items": [
+    { "description": "Дизайн логотипа", "amount": 150.00 },
+    { "description": "Вёрстка сайта", "amount": 350.00 }
+  ]
+}
 ```
 
-## Compile and run the project
+### POST /invoices — Ответ (202 Accepted)
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```json
+{
+  "invoiceId": "uuid",
+  "invoiceNumber": "INV-2026-0001",
+  "status": "PENDING",
+  "message": "Invoice is being processed"
+}
 ```
 
-## Run tests
+### GET /invoices — Query параметры
+
+| Параметр | По умолчанию | Описание |
+|---|---|---|
+| `page` | `1` | Номер страницы |
+| `limit` | `10` | Количество элементов на странице |
+
+---
+
+## Переменные окружения
+
+Скопируйте `.env.example` в `.env` и заполните значения:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+| Переменная | Пример | Описание |
+|---|---|---|
+| `PORT` | `3000` | Порт приложения |
+| `NODE_ENV` | `development` | Окружение |
+| `DB_HOST` | `localhost` | Хост PostgreSQL |
+| `DB_PORT` | `5432` | Порт PostgreSQL |
+| `DB_USER` | `postgres` | Пользователь PostgreSQL |
+| `DB_PASSWORD` | `postgres` | Пароль PostgreSQL |
+| `DB_NAME` | `invoice_db` | Название базы данных |
+| `DATABASE_URL` | `postgresql://...` | Строка подключения Prisma |
+| `REDIS_HOST` | `localhost` | Хост Redis |
+| `REDIS_PORT` | `6379` | Порт Redis |
+| `MAIL_HOST` | `smtp.mailersend.net` | SMTP хост |
+| `MAIL_PORT` | `587` | SMTP порт |
+| `MAIL_USER` | `...` | SMTP логин |
+| `MAIL_PASS` | `...` | SMTP пароль |
+| `MAIL_FROM` | `noreply@yourdomain.com` | Email отправителя |
+| `SENDER_NAME` | `Иван Иванов` | Имя отправителя в PDF |
+| `SENDER_COMPANY` | `Моя Компания` | Компания отправителя в PDF |
+| `SENDER_ADDRESS` | `ул. Главная, 1` | Адрес отправителя в PDF |
+| `SENDER_PHONE` | `+375 29 000-00-00` | Телефон отправителя в PDF |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Запуск через Docker (рекомендуется)
+
+Это основной способ запуска всего приложения.
+
+### Требования
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) установлен и запущен
+
+### Шаг 1 — Сборка и запуск всех контейнеров
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker-compose up --build -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Запускаются три контейнера:
+- `app` — NestJS-приложение
+- `postgres` — PostgreSQL 16
+- `redis` — Redis 7
 
-## Resources
+Контейнер приложения ожидает готовности `postgres` и `redis` перед стартом (healthcheck).
 
-Check out a few resources that may come in handy when working with NestJS:
+### Шаг 2 — Применение миграций базы данных
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+docker-compose exec app npx prisma migrate deploy
+```
 
-## Support
+Применяет все SQL-миграции из папки `prisma/migrations/` к базе данных.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Шаг 3 — Загрузка тестовых данных (опционально)
 
-## Stay in touch
+```bash
+docker-compose exec app npx ts-node prisma/seed.ts
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+> При первом запуске `npx` предложит установить `ts-node` — введите `y` и нажмите Enter.
 
-## License
+Создаёт в базе тестовых клиентов и инвойсы.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+После выполнения всех шагов приложение доступно по адресу:
+- **API:** http://localhost:3000
+- **Swagger UI:** http://localhost:3000/api
+
+### Проверка работы
+
+```bash
+# Статус контейнеров
+docker-compose ps
+
+# Логи приложения в реальном времени
+docker-compose logs app -f
+
+# Открыть Swagger UI в браузере
+# http://localhost:3000/api
+```
+
+---
+
+## Запуск локально (без Docker для приложения)
+
+Используйте этот способ для разработки с hot-reload.
+
+### Требования
+
+- Node.js 20+
+- Docker Desktop (для PostgreSQL и Redis)
+
+### Шаг 1 — Установка зависимостей
+
+```bash
+npm install
+```
+
+### Шаг 2 — Подготовка файла окружения
+
+```bash
+cp .env.example .env
+```
+
+Оставьте `DB_HOST=localhost` и `REDIS_HOST=localhost`. Заполните переменные `MAIL_*`.
+
+### Шаг 3 — Запуск PostgreSQL и Redis через Docker
+
+```bash
+docker-compose up postgres redis -d
+```
+
+### Шаг 4 — Применение миграций
+
+```bash
+npx prisma migrate deploy
+```
+
+### Шаг 5 — Загрузка тестовых данных (опционально)
+
+```bash
+npx ts-node prisma/seed.ts
+```
+
+### Шаг 6 — Запуск приложения
+
+```bash
+# Режим разработки с hot-reload
+npm run start:dev
+
+# Или сборка и запуск продакшн-версии
+npm run build
+node dist/src/main
+```
+
+Приложение будет доступно по адресу `http://localhost:3000`.
+Swagger UI: `http://localhost:3000/api`.
+
+---
+
+## Docker — Полезные команды
+
+```bash
+# Запустить все контейнеры в фоне
+docker-compose up -d
+
+# Пересобрать образ и запустить (после изменений в коде)
+docker-compose up --build -d
+
+# Остановить все контейнеры
+docker-compose down
+
+# Остановить контейнеры и удалить все тома с данными (полный сброс)
+docker-compose down -v
+
+# Полная очистка: удалить контейнеры, образы и тома
+docker-compose down -v --rmi all
+
+# Логи приложения в реальном времени
+docker-compose logs app -f
+
+# Выполнить команду внутри работающего контейнера
+docker-compose exec app <команда>
+
+# Применить миграции внутри контейнера
+docker-compose exec app npx prisma migrate deploy
+
+# Загрузить тестовые данные внутри контейнера
+# При первом запуске npx предложит установить ts-node — введите y и нажмите Enter
+docker-compose exec app npx ts-node prisma/seed.ts
+
+# Открыть интерактивную оболочку внутри контейнера
+docker-compose exec app sh
+```
+
+---
+
+## Команды для работы с миграциями
+
+```bash
+# Применить все миграции (для продакшна и Docker)
+npx prisma migrate deploy
+
+# Создать новую миграцию после изменения схемы (только для разработки)
+npx prisma migrate dev --name <название-миграции>
+
+# Полный сброс базы и повторное применение всех миграций
+npx prisma migrate reset
+
+# Посмотреть статус миграций
+npx prisma migrate status
+```
+
+---
+
+
+
+## Тестовые данные (seed)
+
+Скрипт создаёт следующих тестовых клиентов:
+
+| Email | Имя | Компания |
+|---|---|---|
+| `john.doe@example.com` | John Doe | Acme Corp |
+| `jane.smith@company.org` | Jane Smith | Smith & Partners |
+| `carlos.garcia@gmail.com` | Carlos Garcia | — |
+| `emily.chen@techcorp.io` | Emily Chen | TechCorp Ltd |
+| `mark.taylor@startup.io` | Mark Taylor | Startup.io |
