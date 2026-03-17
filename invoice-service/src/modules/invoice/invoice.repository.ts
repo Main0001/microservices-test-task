@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InvoiceStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateInvoiceData } from './interfaces/invoice.interfaces';
+import { CreateInvoiceData } from './dto/invoice.dto';
 import { InvoiceWithItems, InvoiceWithDetails } from './types/invoice.types';
 
 @Injectable()

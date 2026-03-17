@@ -3,9 +3,8 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { InvoiceRepository } from './invoice.repository';
 import { InvoiceWithDetails } from './types/invoice.types';
-import { PaginatedInvoicesResult } from './interfaces/invoice.interfaces';
 import { ClientService } from '../client/client.service';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { CreateInvoiceDto, PaginatedInvoicesResult } from './dto/invoice.dto';
 
 @Injectable()
 export class InvoiceService {
