@@ -9,7 +9,7 @@ export class MailService {
   private readonly transporter: nodemailer.Transporter;
 
   constructor(private readonly configService: ConfigService) {
-    const mail = this.configService.get('mail');
+    const mail = this.configService.get('config.mail');
     this.transporter = nodemailer.createTransport({
       host: mail.host,
       port: mail.port,
@@ -24,7 +24,7 @@ export class MailService {
    * @param options.pdfBuffer - PDF file content as a Buffer
    */
   async sendInvoice(options: SendInvoiceOptions): Promise<void> {
-    const from = this.configService.get<string>('mail.from');
+    const from = this.configService.get<string>('config.mail.from');
 
     await this.transporter.sendMail({
       from,

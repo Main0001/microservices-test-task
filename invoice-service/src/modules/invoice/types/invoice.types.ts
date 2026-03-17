@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 export type InvoiceWithItems = Prisma.InvoiceGetPayload<{
   include: { items: true; client: true };
@@ -7,3 +7,4 @@ export type InvoiceWithItems = Prisma.InvoiceGetPayload<{
 export type InvoiceWithDetails = Prisma.InvoiceGetPayload<{
   include: { items: true; client: { include: { company: true } } };
 }>;
+

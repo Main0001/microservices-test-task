@@ -36,7 +36,7 @@ export class PdfProcessor extends WorkerHost {
 
       // 2. Generate PDF
       const pdfBuffer = await this.pdfService.generate({
-        sender: this.configService.get('app.sender')!,
+        sender: this.configService.get('config.app.sender')!,
         client: {
           firstName: invoice.client!.firstName,
           lastName: invoice.client!.lastName,

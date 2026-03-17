@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
-import appConfig from './config/app.config';
-import mailConfig from './config/mail.config';
-import redisConfig from './config/redis.config';
+import config from './config/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { ClientModule } from './modules/client/client.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
@@ -14,14 +12,14 @@ import { MailModule } from './modules/mail/mail.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, mailConfig, redisConfig],
+      load: [config],
     }),
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         connection: {
-          host: config.get<string>('redis.host'),
-          port: config.get<number>('redis.port'),
+          host: config.get<string>('config.redis.host'),
+          port: config.get<number>('config.redis.port'),
         },
       }),
     }),
