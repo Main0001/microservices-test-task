@@ -4,6 +4,7 @@ import * as env from 'env-var';
 export default registerAs('config', () => ({
   app: {
     port: env.get('PORT').default('3000').asPortNumber(),
+    url: env.get('APP_URL').default('localhost').asString(),
     nodeEnv: env.get('NODE_ENV').default('development').asString(),
     sender: {
       name: env.get('SENDER_NAME').required().asString(),
