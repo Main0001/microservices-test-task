@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { InjectQueue } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import { Queue } from 'bullmq';
@@ -80,7 +81,14 @@ export class InvoiceService {
    * @returns Invoice with items, client, and company
    */
   async findOne(id: string): Promise<InvoiceWithDetails> {
-    return this.invoiceRepository.findById(id);
+    try {
+      return await this.invoiceRepository.findById(id);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new NotFoundException(`Invoice ${id} not found`);
+      }
+      throw error;
+    }
   }
 
   /**
