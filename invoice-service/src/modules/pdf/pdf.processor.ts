@@ -72,8 +72,11 @@ export class PdfProcessor extends WorkerHost {
           pdfBuffer: pdfBuffer.toString('base64'),
         },
         {
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 2000 },
+          attempts: this.configService.get<number>('config.queue.attempts')!,
+          backoff: {
+            type: 'exponential',
+            delay: this.configService.get<number>('config.queue.backoffDelay')!,
+          },
         },
       );
 

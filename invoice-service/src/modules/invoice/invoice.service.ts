@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
+import { ConfigService } from '@nestjs/config';
 import { Queue } from 'bullmq';
 import { InvoiceRepository } from './invoice.repository';
 import { InvoiceWithDetails } from './types/invoice.types';
@@ -11,6 +12,7 @@ export class InvoiceService {
   constructor(
     private readonly invoiceRepository: InvoiceRepository,
     private readonly clientService: ClientService,
+    private readonly configService: ConfigService,
     @InjectQueue('pdf-generation') private readonly pdfQueue: Queue,
   ) {}
 
@@ -39,8 +41,11 @@ export class InvoiceService {
       'generate',
       { invoiceId: invoice.id },
       {
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 2000 },
+        attempts: this.configService.get<number>('config.queue.attempts')!,
+        backoff: {
+          type: 'exponential',
+          delay: this.configService.get<number>('config.queue.backoffDelay')!,
+        },
       },
     );
 

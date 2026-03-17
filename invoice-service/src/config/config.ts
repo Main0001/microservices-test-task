@@ -27,4 +27,11 @@ export default registerAs('config', () => ({
   database: {
     url: env.get('DATABASE_URL').required().asString(),
   },
+  queue: {
+    attempts: env.get('QUEUE_ATTEMPTS').default('3').asIntPositive(),
+    backoffDelay: env
+      .get('QUEUE_BACKOFF_DELAY')
+      .default('2000')
+      .asIntPositive(), //2 seconds
+  },
 }));
