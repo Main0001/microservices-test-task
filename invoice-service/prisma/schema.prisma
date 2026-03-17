@@ -9,8 +9,8 @@ datasource db {
 model Client {
   id        String    @id @default(uuid())
   email     String    @unique
-  firstName String
-  lastName  String
+  firstName String?
+  lastName  String?
   company   Company?
   invoices  Invoice[]
   createdAt DateTime  @default(now())

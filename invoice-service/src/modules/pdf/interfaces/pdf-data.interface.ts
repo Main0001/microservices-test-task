@@ -1,6 +1,6 @@
 export interface PdfData {
   sender: { name: string; company: string; address: string; phone: string };
-  client: { firstName: string; lastName: string };
+  client: { email: string };
   company: {
     name: string;
     address?: string | null;

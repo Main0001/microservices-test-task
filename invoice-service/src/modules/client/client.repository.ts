@@ -24,22 +24,12 @@ export class ClientRepository {
 
   /**
    * Creates a new client from an email address.
-   * Parses first/last name from the email username (e.g. john.doe@... → John Doe).
    * @param email - Client email address
    * @returns Created client with company
    */
   async create(email: string): Promise<ClientWithCompany> {
-    const [firstName, ...rest] = email.split('@')[0].split('.');
-    const lastName = rest.join('.') || '';
-
     return this.prisma.client.create({
-      data: {
-        email,
-        firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
-        lastName: lastName
-          ? lastName.charAt(0).toUpperCase() + lastName.slice(1)
-          : '',
-      },
+      data: { email },
       include: { company: true },
     });
   }
